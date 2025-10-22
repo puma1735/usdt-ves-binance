@@ -19,7 +19,6 @@ r = requests.get(URL, timeout=15).json()
 bnb = r["binancep2p"]
 new_entry = {"ask": bnb["ask"], "bid": bnb["bid"], "time": bnb["time"]}
 
-# primer run: current = previous
 if old["current"] is None:
     old["current"] = old["previous"] = new_entry
 else:
