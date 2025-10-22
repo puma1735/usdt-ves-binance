@@ -4,10 +4,17 @@ URL = "https://criptoya.com/api/usdt/ves"
 FILE = "rates.json"
 
 def load():
-    if os.path.exists(FILE):
+    if not os.path.exists(FILE):
+        return {"current": None, "previous": None}
+    try:
         with open(FILE) as f:
-            return json.load(f)
-    return {"current": None, "previous": None}
+            data = json.load(f)
+        # Si falta alguna llave, lo arreglamos
+        if "current" not in data or "previous" not in data:
+            return {"current": None, "previous": None}
+        return data
+    except:
+        return {"current": None, "previous": None}
 
 def save(data):
     with open(FILE, "w") as f:
