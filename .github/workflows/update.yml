@@ -1,7 +1,8 @@
 name: Update binancep2p every 8 min
 on:
   schedule:
-    - cron: '*/8 * * * *'   # cada 8 minutos
+    - cron: '0 0 1 * *'   # 1er día de cada mes a las 00:00 UTC
+    #- cron: '*/8 * * * *'   # cada 8 minutos
   workflow_dispatch:        # botón manual
 jobs:
   update:
