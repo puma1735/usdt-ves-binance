@@ -35,19 +35,23 @@ except error.URLError:
     data = {}
 
 if "binancep2p" not in data:
-    exit(0)
+    exit(0)  # no hay datos, no actualizamos
 
 bnb = data["binancep2p"]
 
-# Ajuste exacto: restamos 4 h 14 min 25 s
-ajuste_seg = 4 * 3600 + 14 * 60 + 25
-ts_local = bnb["time"] - ajuste_seg
-hora_str = datetime.datetime.utcfromtimestamp(ts_local).strftime("%A, %d/%m/%Y %I:%M %p")
+# Paso 1: segundos → milisegundos
+ts_ms = bnb["time"] * 1000
+
+# Paso 2: UTC+0 → UTC-4 (restar 4 h)
+ts_venezuela = (ts_ms // 1000) - 4 * 3600
+
+# Paso 3: formatear en español
+hora_str = datetime.datetime.utcfromtimestamp(ts_venezuela).strftime("%A, %d/%m/%Y %I:%M %p")
 
 new_entry = {
     "ask": bnb["ask"],
     "bid": bnb["bid"],
-    "time": ts_local,
+    "time": ts_ms,  # milisegundos
     "horaVenezuela": hora_str
 }
 
