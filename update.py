@@ -4,11 +4,10 @@ from urllib import request, error
 URL = "https://criptoya.com/api/usdt/ves"
 FILE = "rates.json"
 
-# Forzamos idioma español (si el sistema lo tiene)
+# Español si está disponible
 try:
     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 except:
-    # Si no está disponible, usamos el default sin fallar
     pass
 
 def load():
@@ -36,19 +35,19 @@ except error.URLError:
     data = {}
 
 if "binancep2p" not in data:
-    exit(0)  # no hay datos, no actualizamos
+    exit(0)
 
 bnb = data["binancep2p"]
 
-# Ajuste real: restamos 4 h 14 min 25 s (15265 segundos)
+# Ajuste exacto: restamos 4 h 14 min 25 s
 ajuste_seg = 4 * 3600 + 14 * 60 + 25
-ts_local = bnb["time"] - ajust_seg
+ts_local = bnb["time"] - ajuste_seg
 hora_str = datetime.datetime.utcfromtimestamp(ts_local).strftime("%A, %d/%m/%Y %I:%M %p")
 
 new_entry = {
     "ask": bnb["ask"],
     "bid": bnb["bid"],
-    "time": ts_local,  # ← ya en tu hora local
+    "time": ts_local,
     "horaVenezuela": hora_str
 }
 
