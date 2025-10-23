@@ -1,17 +1,16 @@
-name: Update binancep2p every 8 min
+name: Update binancep2p every un mes
 on:
   schedule:
     - cron: '0 0 1 * *'   # 1er día de cada mes a las 00:00 UTC
-    #- cron: '*/8 * * * *'   # cada 8 minutos
-  workflow_dispatch:        # botón manual
+    #- cron: '*/5 * * * *'
+  workflow_dispatch:
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+        with: { python-version: '3.11' }
       - run: pip install requests
       - run: python update.py
       - uses: stefanzweifel/git-auto-commit-action@v5
