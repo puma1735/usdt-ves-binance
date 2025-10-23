@@ -1,8 +1,12 @@
-import json, os
-from urllib import request, error
+import json, os, datetime, requests
+from pytz import timezone
 
 URL = "https://criptoya.com/api/usdt/ves"
 FILE = "rates.json"
+
+# Zonas horarias
+utc = timezone('UTC')
+caracas = timezone('America/Caracas')
 
 def load():
     if not os.path.exists(FILE):
@@ -22,17 +26,20 @@ def save(data):
 
 # ----
 old = load()
-try:
-    with request.urlopen(URL, timeout=15) as resp:
-        data = json.loads(resp.read().decode())
-except error.URLError:
-    data = {}
+r = requests.get(URL, timeout=15).json()
+bnb = r["binancep2p"]
 
-if "binancep2p" not in data:
-    exit(0)  # no hay datos, no actualizamos
+# Convertir timestamp a hora de Venezuela
+ts_utc = datetime.datetime.utcfromtimestamp(bnb["time"]).replace(tzinfo=utc)
+ts_caracas = ts_utc.astimezone(caracas)
+hora_str = ts_caracas.strftime("%A, %d/%m/%Y %I:%M %p")
 
-bnb = data["binancep2p"]
-new_entry = {"ask": bnb["ask"], "bid": bnb["bid"], "time": bnb["time"]}
+new_entry = {
+    "ask": bnb["ask"],
+    "bid": bnb["bid"],
+    "time": bnb["time"],
+    "horaVenezuela": hora_str  # ← ya formateada
+}
 
 if old["current"] is None:
     old["current"] = old["previous"] = new_entry
