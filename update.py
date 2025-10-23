@@ -1,8 +1,15 @@
-import json, os, datetime
+import json, os, datetime, locale
 from urllib import request, error
 
 URL = "https://criptoya.com/api/usdt/ves"
 FILE = "rates.json"
+
+# Forzamos idioma español (si el sistema lo tiene)
+try:
+    locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+except:
+    # Si no está disponible, usamos el default sin fallar
+    pass
 
 def load():
     if not os.path.exists(FILE):
@@ -33,13 +40,16 @@ if "binancep2p" not in data:
 
 bnb = data["binancep2p"]
 
-# Convertimos UTC+8 → UTC+0 (restamos 8 horas)
-utc_time = bnb["time"] - 8 * 3600
+# Ajuste real: restamos 4 h 14 min 25 s (15265 segundos)
+ajuste_seg = 4 * 3600 + 14 * 60 + 25
+ts_local = bnb["time"] - ajust_seg
+hora_str = datetime.datetime.utcfromtimestamp(ts_local).strftime("%A, %d/%m/%Y %I:%M %p")
 
 new_entry = {
     "ask": bnb["ask"],
     "bid": bnb["bid"],
-    "time": utc_time  # ← ya en UTC+0
+    "time": ts_local,  # ← ya en tu hora local
+    "horaVenezuela": hora_str
 }
 
 if old["current"] is None:
