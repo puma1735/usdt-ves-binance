@@ -1,13 +1,8 @@
 import json, os, datetime
 from urllib import request, error
-from pytz import timezone
 
 URL = "https://criptoya.com/api/usdt/ves"
 FILE = "rates.json"
-
-# Zonas horarias
-utc = timezone('UTC')
-caracas = timezone('America/Caracas')
 
 def load():
     if not os.path.exists(FILE):
@@ -38,10 +33,9 @@ if "binancep2p" not in data:
 
 bnb = data["binancep2p"]
 
-# Convertir timestamp a hora de Venezuela
-ts_utc = datetime.datetime.utcfromtimestamp(bnb["time"]).replace(tzinfo=utc)
-ts_caracas = ts_utc.astimezone(caracas)
-hora_str = ts_caracas.strftime("%A, %d/%m/%Y %I:%M %p")
+# Conversión manual UTC+8 → UTC-4 (restar 12 h)
+ts_local = bnb["time"] - 12 * 3600
+hora_str = datetime.datetime.utcfromtimestamp(ts_local).strftime("%A, %d/%m/%Y %I:%M %p")
 
 new_entry = {
     "ask": bnb["ask"],
