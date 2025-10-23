@@ -13,7 +13,9 @@ jobs:
           python-version: '3.11'
       - run: pip install requests
       - run: python update.py
-      - uses: stefanzweifel/git-auto-commit-action@v4.16.0
-        with:
-          commit_message: 'chore: update binancep2p'
-          push_options: '--force'
+      - name: Commit & push
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add rates.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update binancep2p" && git push origin main --force)
