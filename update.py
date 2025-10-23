@@ -33,15 +33,13 @@ if "binancep2p" not in data:
 
 bnb = data["binancep2p"]
 
-# Conversión manual UTC+8 → UTC-4 (restar 12 h)
-ts_local = bnb["time"] - 12 * 3600
-hora_str = datetime.datetime.utcfromtimestamp(ts_local).strftime("%A, %d/%m/%Y %I:%M %p")
+# Convertimos UTC+8 → UTC+0 (restamos 8 horas)
+utc_time = bnb["time"] - 8 * 3600
 
 new_entry = {
     "ask": bnb["ask"],
     "bid": bnb["bid"],
-    "time": bnb["time"],
-    "horaVenezuela": hora_str
+    "time": utc_time  # ← ya en UTC+0
 }
 
 if old["current"] is None:
