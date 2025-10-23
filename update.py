@@ -1,4 +1,5 @@
-import json, os, datetime, requests
+import json, os, datetime
+from urllib import request, error
 from pytz import timezone
 
 URL = "https://criptoya.com/api/usdt/ves"
@@ -26,8 +27,16 @@ def save(data):
 
 # ----
 old = load()
-r = requests.get(URL, timeout=15).json()
-bnb = r["binancep2p"]
+try:
+    with request.urlopen(URL, timeout=15) as resp:
+        data = json.loads(resp.read().decode())
+except error.URLError:
+    data = {}
+
+if "binancep2p" not in data:
+    exit(0)  # no hay datos, no actualizamos
+
+bnb = data["binancep2p"]
 
 # Convertir timestamp a hora de Venezuela
 ts_utc = datetime.datetime.utcfromtimestamp(bnb["time"]).replace(tzinfo=utc)
@@ -38,7 +47,7 @@ new_entry = {
     "ask": bnb["ask"],
     "bid": bnb["bid"],
     "time": bnb["time"],
-    "horaVenezuela": hora_str  # ← ya formateada
+    "horaVenezuela": hora_str
 }
 
 if old["current"] is None:
